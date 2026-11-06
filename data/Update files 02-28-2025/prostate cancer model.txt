@@ -1,0 +1,31 @@
+DESCRIPTION: Prostate cancer model with radiotherapy
+;Treating the effect as more continuous
+;RT is the "amount" of radiotherapy - treating RT as an "infusion".
+;A thredhold value of 0.001 is used here. If RT>=0.001, then the effect of radiotherapy is "on", otherwise, it is "off".
+
+[LONGITUDINAL]
+input = {A, B, gamma};  
+
+PK:
+depot(target=RT) 
+
+EQUATION:
+
+t0   = 0
+V_0  = 0.02; V(0) taken from the first data point
+RT_0 = 0
+
+k    = 100
+
+ddt_RT = -k*RT
+	if RT >= 0.001
+    	const = 1
+    elseif RT < 0.001
+    	const = 0
+    end
+ddt_V  = A*V*(1-V/B) - gamma*const*V
+
+Volume = V
+
+OUTPUT:
+output = {Volume}
